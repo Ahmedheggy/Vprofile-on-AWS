@@ -1,0 +1,41 @@
+graph TD
+    User[User]
+    
+    subgraph VPC["AWS VPC"]
+        subgraph Public_Subnet["Public Subnet"]
+            EC2["EC2 Instance (Tomcat App)"]
+        end
+        
+        subgraph Private_Subnet["Private Subnet"]
+            RDS[("Amazon RDS (MySQL)")]
+            Cache[("Amazon ElastiCache (Memcached)")]
+            MQ[("Amazon MQ (RabbitMQ)")]
+        end
+        
+        SG_App["Security Group: App-SG"]
+        SG_Backend["Security Group: Backend-SG"]
+    end
+    
+    subgraph Route53["Route 53 Private Zone"]
+        R53_DB["db01.vprofile.in"]
+        R53_Cache["mc01.vprofile.in"]
+        R53_MQ["rmq01.vprofile.in"]
+    end
+
+    User -->|HTTP :8080| EC2
+    
+    EC2 -->|JDBC :3306| R53_DB
+    EC2 -->|Memcached :11211| R53_Cache
+    EC2 -->|AMQP :5672| R53_MQ
+    
+    R53_DB -.->|Resolves to| RDS
+    R53_Cache -.->|Resolves to| Cache
+    R53_MQ -.->|Resolves to| MQ
+    
+    %% Security Group Logic
+    EC2 --- SG_App
+    RDS --- SG_Backend
+    Cache --- SG_Backend
+    MQ --- SG_Backend
+    
+    SG_App -.->|Allowed Inbound| SG_Backend
