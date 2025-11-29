@@ -12,7 +12,11 @@ VProfile is a user profile management application originally built on a local mu
 
 The application follows a standard 3-tier web architecture on AWS:
 
-![AWS Architecture](Imgs/aws_architecture.png)
+
+<div align="center">
+    <img src="Imgs/arch.png" width="50%">
+</div>
+<br>
 
 ### Request Flow
 1. **User** accesses the application via a domain name managed by **Route 53**.
